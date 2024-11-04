@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Hukum</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .chat-container {
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .chat-log {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .user-input {
+            display: flex;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h2>Chatbot Hukum</h2>
+        <div class="chat-log" id="chat-log"></div>
+        <div class="user-input">
+            <input type="text" id="user-input" placeholder="Tanyakan sesuatu...">
+            <button id="send-btn">Kirim</button>
+        </div>
+    </div>
+
+    <script>
+        const qa_pairs = {
+            "apa yang dimaksud dengan hukum pidana": "Hukum pidana adalah cabang hukum yang mengatur tentang perbuatan-perbuatan yang dilarang oleh undang-undang karena dianggap merugikan masyarakat, serta menetapkan sanksi bagi yang melanggar perbuatan tersebut.",
+    "apa perbedaan antara hukum publik dan hukum privat": "Hukum publik mengatur hubungan antara negara dan individu, termasuk hukum pidana, hukum tata negara, dan hukum administrasi. Sementara itu, hukum privat mengatur hubungan antar-individu dalam masyarakat, seperti hukum perdata dan hukum dagang.",
+    "apa itu asas legalitas dalam hukum pidana": "Asas legalitas adalah prinsip bahwa seseorang tidak dapat dipidana kecuali ada undang-undang yang mengatur perbuatan tersebut sebagai tindak pidana. Dengan kata lain, tidak ada hukuman tanpa hukum tertulis.",
+    "jelaskan perbedaan antara hukum materil dan hukum formil": "Hukum materil adalah hukum yang mengatur tentang hak dan kewajiban serta perbuatan yang dilarang atau diharuskan oleh hukum. Hukum formil adalah hukum yang mengatur tata cara untuk menegakkan hukum materil, seperti tata cara persidangan.",
+    "apa itu perbuatan melawan hukum dalam konteks hukum perdata": "Perbuatan melawan hukum dalam hukum perdata adalah tindakan yang melanggar hak orang lain atau bertentangan dengan kewajiban yang diatur dalam undang-undang, yang mengakibatkan kerugian pada pihak lain.",
+    "sebutkan unsur-unsur dalam suatu tindak pidana": "Unsur-unsur tindak pidana meliputi unsur objektif (perbuatan yang dilarang) dan unsur subjektif (sikap batin atau niat pelaku, seperti kesengajaan atau kelalaian).",
+    "apa yang dimaksud dengan hak asasi manusia": "Hak asasi manusia adalah hak dasar yang dimiliki oleh setiap orang sejak lahir sebagai makhluk ciptaan Tuhan, yang harus dihormati, dilindungi, dan dipenuhi oleh negara maupun individu lain.",
+    "apa fungsi dari asas praduga tak bersalah": "Asas praduga tak bersalah adalah prinsip hukum yang menyatakan bahwa seseorang dianggap tidak bersalah sebelum ada putusan pengadilan yang menyatakan kesalahannya secara sah dan meyakinkan.",
+    "apa perbedaan antara putusan pengadilan yang bersifat inkracht dan yang belum": "Putusan pengadilan yang inkracht adalah putusan yang telah mempunyai kekuatan hukum tetap dan tidak dapat diajukan banding atau kasasi lagi. Sementara itu, putusan yang belum inkracht masih bisa diajukan upaya hukum.",
+    "jelaskan mengenai mediasi dalam penyelesaian sengketa": "Mediasi adalah suatu proses penyelesaian sengketa di luar pengadilan yang melibatkan pihak ketiga yang netral (mediator) untuk membantu para pihak mencapai kesepakatan secara sukarela.",
+    "apa saja alat bukti dalam hukum acara": "Alat bukti meliputi keterangan saksi, surat, petunjuk, pengakuan, dan sumpah.",
+    "apa itu saksi dalam hukum acara": "Saksi adalah orang yang memberikan keterangan di pengadilan mengenai perkara yang ia ketahui.",
+    "apa yang dimaksud dengan eksekusi putusan": "Apa yang dimaksud dengan eksekusi putusan.",
+    "apa itu putusan inkracht": "Putusan inkracht adalah putusan yang telah berkekuatan hukum tetap dan tidak dapat diajukan banding atau kasasi.",
+    "apa itu kasasi": "Kasasi adalah upaya hukum ke Mahkamah Agung untuk meninjau kembali putusan pengadilan yang dianggap keliru dalam penerapan hukum.",
+    "apa itu praperadilan": "Praperadilan adalah upaya hukum untuk menguji keabsahan tindakan penegak hukum, seperti penangkapan atau penahanan.",
+    "apa perbedaan antara banding dan kasasi": "Banding diajukan ke pengadilan tingkat lebih tinggi (Pengadilan Tinggi), sedangkan kasasi diajukan ke Mahkamah Agung.",
+    "apa itu putusan sela": "Putusan sela adalah putusan sementara sebelum putusan akhir untuk menghentikan atau melanjutkan pemeriksaan perkara.",
+    "apa yang dimaksud dengan perkara perdata": "Perkara perdata adalah kasus yang melibatkan hak dan kewajiban antara individu atau badan hukum.",
+    "apa itu perkara pidana": "Perkara pidana adalah kasus yang melibatkan pelanggaran terhadap hukum pidana oleh pelaku kejahatan.",
+    "apa itu hukum administrasi negara": "Hukum ini berperan menjaga keadilan dalam pelayanan publik dan pengambilan keputusan pemerintah.",
+    "apa itu tindakan administratif": "Tindakan administratif adalah tindakan yang diambil oleh pemerintah dalam menjalankan administrasi publik.",
+    "apa itu asas asas umum pemerintahan yang baik (AUPB)": "AUPB adalah prinsip yang mengatur agar tindakan pemerintah dilakukan dengan adil, tidak memihak, dan proporsional.",
+    "apa itu asas transparansi dalam hukum administrasi": "Asas transparansi adalah prinsip yang mewajibkan pemerintah untuk bersikap terbuka dalam proses administrasi.",
+    "apa yang dimaksud dengan asas akuntabilitas": "Asas akuntabilitas adalah prinsip yang menuntut pejabat publik untuk bertanggung jawab atas tindakan dan keputusannya.",
+    "apa itu diskresi dalam hukum administrasi": "Diskresi adalah kebijakan yang diambil oleh pejabat negara ketika tidak ada aturan hukum yang mengatur secara jelas.",
+    "apa itu wewenang dalam hukum administrasi": "Wewenang adalah hak yang dimiliki oleh pejabat atau badan hukum untuk mengambil tindakan atau keputusan.",
+    "apa itu kontrol administrasi": "Kontrol administrasi adalah pengawasan terhadap tindakan pemerintah agar sesuai hukum.",
+    "apa itu peradilan administrasi": "Peradilan administrasi adalah pengadilan yang menangani sengketa antara masyarakat dan pemerintah.",
+    "apa itu hukum internasional": "Hukum internasional adalah hukum yang mengatur hubungan antarnegara atau entitas internasional.",
+    "apa perbedaan antara hukum internasional publik dan privat": "Hukum internasional publik mengatur hubungan antarnegara, sedangkan hukum internasional privat mengatur hubungan individu dari negara berbeda.",
+    "apa itu perjanjian internasional": "Perjanjian internasional adalah kesepakatan yang mengikat antara negara atau organisasi internasional.",
+    "apa itu kedaulatan negara": "Kedaulatan negara adalah hak eksklusif negara untuk mengatur urusan dalam negerinya tanpa campur tangan pihak luar.",
+    "apa itu yurisdiksi dalam hukum internasional": "Yurisdiksi adalah wewenang negara untuk membuat dan menegakkan hukum dalam wilayahnya.",
+    "apa itu Hak Asasi Manusia (HAM) dalam hukum internasional": "HAM adalah hak fundamental yang melekat pada semua individu dan diakui dalam hukum internasional.",
+    "apa itu Mahkamah Internasional": "Mahkamah Internasional adalah badan peradilan utama PBB untuk menyelesaikan sengketa antarnegara.",
+    "apa itu hukum laut internasional": "Hukum laut internasional mengatur hak dan kewajiban negara dalam penggunaan laut dan sumber daya laut.",
+    "apa peran Perserikatan Bangsa-Bangsa (PBB) dalam hukum internasional": "PBB berperan menjaga perdamaian, keamanan internasional, dan mendorong penerapan hukum internasional.",
+    "apa itu yurisdiksi ekstrateritorial": "Yurisdiksi ekstrateritorial adalah kewenangan negara untuk menegakkan hukum di luar wilayahnya dalam situasi tertentu.",
+    "apa itu hukum lingkungan": "Hukum lingkungan adalah hukum yang mengatur perlindungan dan pengelolaan lingkungan hidup.",
+    "apa tujuan hukum lingkungan": "Tujuan utamanya adalah melindungi lingkungan untuk keberlanjutan hidup manusia dan alam.",
+    "apa yang dimaksud dengan pencemaran lingkungan": "Pencemaran lingkungan adalah masuknya zat atau energi ke lingkungan yang merusak keseimbangan alam.",
+    "apa itu AMDAL": "AMDAL (Analisis Mengenai Dampak Lingkungan) adalah kajian dampak lingkungan dari suatu kegiatan usaha.",
+    "apa itu tanggung jawab lingkungan": "Tanggung jawab lingkungan adalah kewajiban untuk memperbaiki kerusakan lingkungan yang disebabkan oleh tindakan tertentu.",
+    "apa itu izin lingkungan": "Izin lingkungan adalah izin yang diberikan oleh pemerintah untuk kegiatan yang berdampak pada lingkungan.",
+    "apa yang dimaksud dengan konservasi": "Konservasi adalah upaya melindungi, mengelola, dan memanfaatkan sumber daya alam secara berkelanjutan.",
+    "apa itu pelestarian lingkungan": "Pelestarian lingkungan adalah tindakan menjaga kelestarian sumber daya alam untuk mencegah kerusakan.",
+    "apa itu prinsip pencemar membayar": "Prinsip ini mengharuskan pencemar untuk menanggung biaya kerusakan lingkungan yang ditimbulkannya.",
+    "apa yang dimaksud dengan rehabilitasi lingkungan": "Rehabilitasi lingkungan adalah usaha untuk memperbaiki lingkungan yang rusak.",
+    "apa itu hukum perlindungan konsumen": "Hukum perlindungan konsumen adalah hukum yang melindungi hak-hak konsumen terhadap barang atau jasa.",
+    "apa hak konsumen menurut UU perlindungan konsumen": "Hak konsumen meliputi hak atas keamanan, kenyamanan, informasi, dan ganti rugi.",
+    "apa kewajiban pelaku usaha": "Kewajiban pelaku usaha termasuk menyediakan informasi yang benar dan menjamin kualitas barang/jasa.",
+    "apa itu jaminan produk": "Jaminan produk adalah janji dari produsen bahwa barang atau jasa akan memenuhi standar tertentu.",
+    "apa yang dimaksud dengan iklan yang menyesatkan": "Iklan menyesatkan adalah iklan yang memberikan informasi palsu atau berlebihan tentang produk.",
+    "apa itu sengketa konsumen": "Sengketa konsumen adalah perselisihan antara konsumen dan pelaku usaha mengenai barang atau jasa.",
+    "apa yang dimaksud dengan Badan Penyelesaian Sengketa Konsumen (BPSK)": " BPSK adalah lembaga yang menyelesaikan sengketa konsumen di luar pengadilan.",
+    "apa itu pengembalian dana": "Pengembalian dana adalah kompensasi berupa uang atas barang/jasa yang tidak sesuai.",
+    "apa itu produk cacat": "Produk cacat adalah barang yang memiliki kekurangan yang dapat membahayakan konsumen.",
+    "apa hak konsumen dalam kasus produk cacat": "Konsumen berhak meminta penggantian, perbaikan, atau pengembalian uang.",
+    "apa itu hak cipta": "Hak cipta adalah hak eksklusif untuk menggunakan atau memperbanyak hasil karya seni, sastra, atau ilmiah.",
+    "apa itu merek dagang": "Merek dagang adalah simbol yang digunakan untuk membedakan produk/jasa suatu perusahaan.",
+    "apa itu paten": "Paten adalah hak eksklusif untuk penemuan teknologi baru yang dapat diterapkan dalam industri.",
+    "apa yang dimaksud dengan rahasia dagang": "Rahasia dagang adalah informasi bisnis yang dirahasiakan oleh perusahaan dan memberikan keuntungan kompetitif, seperti resep, formula, atau metode produksi, yang tidak diketahui umum dan dilindungi hukum.",
+    "apa itu desain industri dalam hukum HKI": "Desain industri adalah hak kekayaan intelektual yang melindungi desain estetika atau bentuk dari suatu produk industri, sehingga desain tersebut tidak dapat ditiru oleh pihak lain tanpa izin.",
+    "apa itu hukum pidana": "Hukum pidana adalah cabang hukum yang mengatur perbuatan yang dilarang dan sanksi yang dikenakan bagi yang melanggarnya.",
+    "apa tujuan dari hukum pidana": "Tujuan utamanya adalah memberikan efek jera, melindungi masyarakat, dan menegakkan keadilan.",
+    "apa itu tindak pidana": "Tindak pidana adalah perbuatan yang melanggar undang-undang pidana dan dapat dihukum.",
+    "apa saja unsur-unsur tindak pidana": "Unsur tindak pidana meliputi unsur objektif (perbuatan) dan unsur subjektif (niat pelaku).",
+    "apa itu asas legalitas dalam hukum pidana": "Asas legalitas berarti tidak ada perbuatan yang dapat dihukum jika belum ada undang-undangnya.",
+    "apa yang dimaksud dengan delik": "Delik adalah istilah lain untuk tindak pidana atau pelanggaran hukum.",
+    "apa perbedaan antara delik umum dan delik khusus": "Delik umum berlaku untuk semua orang, sedangkan delik khusus berlaku pada kondisi tertentu.",
+    "apa itu delik dolus": "Delik dolus adalah tindak pidana yang dilakukan dengan kesengajaan.",
+    "apa itu delik culpa": "Delik culpa adalah tindak pidana yang terjadi karena kelalaian atau ketidaksengajaan.",
+    "apa yang dimaksud dengan percobaan tindak pidana": "Percobaan tindak pidana adalah tindakan yang dimulai tetapi tidak sampai selesai karena hal-hal tertentu.",
+    "apa saja jenis pidana dalam hukum pidana": " Jenis pidana meliputi pidana mati, penjara, kurungan, denda, dan tindakan lain.",
+    "apa itu pidana mati": "Pidana mati adalah hukuman terberat berupa eksekusi terhadap pelaku tindak pidana berat.",
+    "apa yang dimaksud dengan grasi": "Grasi adalah pengampunan yang diberikan oleh Presiden kepada narapidana.",
+    "apa perbedaan antara pidana pokok dan pidana tambahan": "Pidana pokok adalah hukuman utama, sedangkan pidana tambahan adalah hukuman tambahan yang dapat menyertai pidana pokok.",
+    "apa yang dimaksud dengan rehabilitasi": "Rehabilitasi adalah pemulihan nama baik dan hak seseorang yang dinyatakan tidak bersalah.",
+    "apa itu hukuman kurungan": "Hukuman kurungan adalah hukuman penahanan untuk jangka waktu tertentu di lembaga pemasyarakatan.",
+    "apa perbedaan antara kejahatan dan pelanggaran": "Kejahatan adalah tindakan kriminal serius, sedangkan pelanggaran adalah tindakan melawan hukum yang sifatnya ringan.",
+    "apa yang dimaksud dengan residivis": "Residivis adalah pelaku tindak pidana yang mengulangi perbuatannya setelah dihukum.",
+    "apa itu pasal karet": " Pasal karet adalah pasal yang dianggap bisa diinterpretasikan secara luas dan tidak spesifik.",
+    "apa peran hakim dalam hukum pidana": "Hakim berperan untuk memutuskan perkara pidana berdasarkan bukti dan hukum yang berlaku.",
+    "apa itu hukum perdata": "Hukum perdata adalah hukum yang mengatur hak dan kewajiban antarindividu dalam masyarakat.",
+    "apa yang dimaksud dengan perikatan": "Perikatan adalah hubungan hukum antara dua pihak di mana pihak satu berhak menuntut pihak lain untuk melakukan sesuatu.",
+    "apa itu perjanjian": "Perjanjian adalah kesepakatan yang mengikat antara dua pihak atau lebih untuk melakukan sesuatu.",
+    "apa itu hukum": "Hukum adalah serangkaian aturan yang dibuat oleh pemerintah atau otoritas berwenang yang mengatur perilaku individu dan kelompok dalam masyarakat. Hukum bertujuan menjaga ketertiban dan keadilan, serta memberikan sanksi bagi yang melanggar.",
+    "apa fungsi utama hukum dalam masyarakat": "Fungsi utama hukum adalah untuk menjaga ketertiban, melindungi hak individu, menyelesaikan sengketa, dan memberikan keadilan. Hukum juga berperan sebagai panduan untuk perilaku yang benar dan menjaga stabilitas sosial.",
+    "apa perbedaan antara hukum pidana dan hukum perdata": "Hukum pidana mengatur perbuatan yang dianggap merugikan atau membahayakan masyarakat, dengan sanksi seperti penjara atau denda. Sedangkan hukum perdata mengatur hak-hak pribadi antarindividu atau kelompok, seperti sengketa perjanjian, tanpa sanksi pidana.",
+    "apa itu kontrak dalam hukum" :"Kontrak adalah perjanjian yang dibuat oleh dua pihak atau lebih yang memiliki konsekuensi hukum. Kontrak harus memiliki syarat-syarat tertentu, seperti persetujuan bersama, tujuan yang sah, dan kemampuan hukum dari pihak-pihak yang terlibat.",
+    "apa yang dimaksud dengan asas legalitas": "Asas legalitas adalah prinsip bahwa seseorang hanya dapat dihukum jika ada undang-undang yang mengatur perbuatannya sebagai tindak pidana sebelum tindakan tersebut dilakukan. Tidak ada hukuman tanpa aturan hukum.",
+    "apa itu hak asasi manusia": "Hak asasi manusia adalah hak yang melekat pada setiap individu sejak lahir, yang harus dihormati, dilindungi, dan dipenuhi oleh negara serta sesama manusia, seperti hak hidup, hak kebebasan berpendapat, dan hak mendapat pendidikan.",
+    "apa perbedaan antara hukum nasional dan hukum internasional": "Hukum nasional mengatur hal-hal yang berlaku di dalam suatu negara, sedangkan hukum internasional mengatur hubungan antarnegara dan organisasi internasional. Hukum internasional biasanya didasarkan pada perjanjian atau kesepakatan bersama antarnegara.",
+    "apa itu mediasi dalam penyelesaian sengketa": "Mediasi adalah proses penyelesaian sengketa di mana pihak ketiga yang netral membantu para pihak yang bersengketa mencapai kesepakatan tanpa harus melalui proses pengadilan.",
+    "apa itu arbitrase": "Arbitrase adalah metode penyelesaian sengketa di luar pengadilan, di mana para pihak yang bersengketa setuju untuk menunjuk seorang atau beberapa arbiter yang memberikan keputusan final dan mengikat.",
+    "apa yang dimaksud dengan hukum adat": "Hukum adat adalah peraturan yang hidup dan berkembang dalam masyarakat tertentu berdasarkan adat istiadat setempat, yang biasanya tidak tertulis tetapi dipatuhi secara turun-temurun.",
+    "apa itu tindak pidana": "Tindak pidana adalah perbuatan yang melanggar hukum pidana dan dapat dikenai sanksi oleh negara, seperti pencurian, pembunuhan, dan penipuan.",
+    "apa perbedaan antara saksi dan terdakwa": "Saksi adalah orang yang mengetahui suatu peristiwa terkait kasus hukum dan memberikan keterangan di pengadilan. Terdakwa adalah orang yang didakwa melakukan suatu tindak pidana dan sedang menjalani proses hukum.",
+    "apa yang dimaksud dengan putusan pengadilan": "Putusan pengadilan adalah keputusan resmi yang dibuat oleh hakim atau majelis hakim setelah melalui proses persidangan. Putusan ini menentukan apakah terdakwa bersalah atau tidak, dan menjatuhkan sanksi jika terbukti bersalah.",
+    "apa itu hak waris": "Hak waris adalah hak seseorang atau sekelompok orang untuk memperoleh harta peninggalan dari pewaris (orang yang meninggal) sesuai dengan ketentuan hukum atau kehendak pewaris.",
+    "apa yang dimaksud dengan gugatan perdata": "Gugatan perdata adalah permohonan yang diajukan oleh seseorang atau pihak tertentu kepada pengadilan untuk menyelesaikan sengketa dalam masalah perdata, seperti sengketa kontrak atau hak milik.",
+    "apa saja syarat sahnya suatu perjanjian": "Syarat sahnya suatu perjanjian adalah adanya kesepakatan, kemampuan para pihak, adanya objek tertentu, dan tujuan yang tidak bertentangan dengan hukum.",
+    "apa itu tindakan pelanggaran HAM": "Pelanggaran HAM adalah tindakan yang merampas atau melanggar hak asasi manusia seseorang atau kelompok, seperti penindasan, penyiksaan, atau diskriminasi.",
+    "apa itu hukum ketenagakerjaan": "Hukum ketenagakerjaan adalah aturan hukum yang mengatur hubungan antara pekerja dan pemberi kerja, termasuk hak dan kewajiban kedua pihak, kondisi kerja, serta perlindungan pekerja.",
+    "apa itu asas praduga tak bersalah": "Asas praduga tak bersalah adalah prinsip bahwa setiap orang yang dituduh melakukan tindak pidana dianggap tidak bersalah sampai terbukti bersalah melalui proses pengadilan.",
+    "apa itu hak cipta": "Hak cipta adalah hak eksklusif yang diberikan kepada pencipta karya untuk mengatur penggunaan karyanya, termasuk reproduksi dan distribusi, yang berlaku dalam jangka waktu tertentu.",
+    "apa yang dimaksud dengan hukum administrasi negara": "Hukum administrasi negara adalah aturan hukum yang mengatur organisasi dan aktivitas pemerintah serta hubungan antara pemerintah dan warga negara.",
+    "Apa itu pembuktian dalam hukum pidana": "Pembuktian dalam hukum pidana adalah proses mengumpulkan dan menyajikan bukti di pengadilan untuk membuktikan apakah terdakwa bersalah atau tidak atas tuduhan yang diajukan.",
+    "apa yang dimaksud dengan vonis bebas": "Vonis bebas adalah keputusan pengadilan yang menyatakan bahwa terdakwa tidak bersalah atau tidak terbukti melakukan tindak pidana yang didakwakan, sehingga terdakwa dibebaskan dari segala tuntutan."
+        };
+
+        const chatLog = document.getElementById("chat-log");
+        const userInput = document.getElementById("user-input");
+        const sendBtn = document.getElementById("send-btn");
+
+        sendBtn.addEventListener("click", sendMessage);
+        userInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const userText = userInput.value.toLowerCase().trim();
+            if (userText === "exit") {
+                chatLog.innerHTML += "<div>Bot: Sampai jumpa lagi!</div>";
+                userInput.disabled = true;
+                sendBtn.disabled = true;
+                return;
+            }
+
+            chatLog.innerHTML += `<div>User: ${userText}</div>`;
+            const response = qa_pairs[userText] || "Bot: Maaf, aku tidak paham pertanyaanmu.";
+            chatLog.innerHTML += `<div>${response}</div>`;
+            userInput.value = '';
+            chatLog.scrollTop = chatLog.scrollHeight; // Gulir ke bawah
+        }
+    </script>
+</body>
+</html>
